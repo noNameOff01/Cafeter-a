@@ -1,6 +1,7 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+import back
 from back import Valores
 from back import Ventas as ven
 from back import Login as lg
@@ -50,6 +51,7 @@ class Ui_Login(object):
         "Border:None;")
         self.password.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.password.setObjectName("password")
+        self.password.setEchoMode(QLineEdit.Password)
         self.usuario_incorrecto = QLabel(self.centralwidget)
         self.usuario_incorrecto.setGeometry(QRect(100, 220, 180, 30))
         self.usuario_incorrecto.setStyleSheet("background-color: rgba(0, 0, 0 , 0%);\n"
@@ -92,6 +94,7 @@ class Ui_Login(object):
         "")
         self.bt_ingresar.setObjectName("bt_ingresar")
         self.bt_ingresar.clicked.connect(self.iniciarSesion)
+        self.datos = back.Login()
         self.label_6 = QLabel(self.centralwidget)
         self.label_6.setGeometry(QRect(160, 140, 160, 40))
         self.label_6.setStyleSheet("background-color: rgba(0, 0, 0 , 0%);\n"
@@ -121,18 +124,39 @@ class Ui_Login(object):
         QMetaObject.connectSlotsByName(Login)
 
     def iniciarSesion(self):
-        self.contrasena = self.password.text()
-        self.usuarios = self.users.text()
+        self.contrasena_incorrecta.setText('')
+        self.usuario_incorrecto.setText('')
+        users_entry= self.users.text()
+        password_entry= self.password.text()
 
-        if lg.busca_users(self, self.usuarios) and lg.busca_password(self, self.contrasena):
-            self.w = Window()
-            self.w.show()
+        users_entry = str("'" + users_entry + "'")
+        password_entry = str("'" + password_entry + "'")
+        
+        dato1 = self.datos.busca_users(users_entry)
+        dato2 = self.datos.busca_password(password_entry)
+
+        if dato1 == [] and dato2 == []:
+            self.contrasena_incorrecta.setText('Contraseña incorrecta')
+            self.usuario_incorrecto.setText('Usuario incorrecto')
         else:
-            self.usuario_incorrecto.setText('El usuario o la contraseña son incorrectos')
+
+            if dato1 == []:
+                self.usuario_incorrecto.setText('Usuario incorrecto')
+            else:
+                dato1 = dato1[0][1]
+            
+            if dato2 == []:
+                self.contrasena_incorrecta.setText('Contraseña incorrecta')
+            else:
+                dato2 = dato2[0][2]
+            
+            if dato1 != [] and dato2 !=[]:
+                self.w = Window()
+                self.w.show()
 
     def retranslateUi(self, Login):
         _translate = QCoreApplication.translate
-        Login.setWindowTitle(_translate("Login", "MainWindow"))
+        Login.setWindowTitle(_translate("Login", "Login"))
         self.label_5.setText(_translate("Login", "Iniciar Sesión"))
         self.users.setPlaceholderText(_translate("Login", "Ingrese su usuario"))
         self.password.setPlaceholderText(_translate("Login", "Ingrese su su contraseña"))
@@ -155,6 +179,7 @@ class Window(QMainWindow):
         self.filasVentasMes = len(self.semanas)
         self.anchoWPedido = 180
         self.largoWPedido = 70
+        #self.admin, self.contrasenia = lg.valores(self)
 
         # ------ VENTANA PRINCIPAL ------
         # Modificación de las propiedades
@@ -187,7 +212,7 @@ class Window(QMainWindow):
         self.btnAceptar2 = QPushButton('Aceptar', objectName = 'btnAceptar2')
         self.btnIngresar = QPushButton('Ingresar', objectName = 'btnIngresar')
         self.btnAgregarUser = QPushButton('Agregar', objectName = 'btnAgregarUser')
-        self.btnEliminarUser = QPushButton('Eliminar', objectName = 'btnEliminarUser')
+        self.btnEliminarUser = QPushButton('Eliminar/Modificar', objectName = 'btnEliminarUser')
         self.btnModificarUser = QPushButton('Modificar', objectName = 'btnModificarUser')
         self.btnEjecutarAgregar = QPushButton('Ejecutar', objectName = 'btnEjecutarAgregar')
         self.btnEjecutarEliminar = QPushButton('Ejecutar', objectName = 'btnEjecutarEliminar')
@@ -229,19 +254,28 @@ class Window(QMainWindow):
         self.campoIdProductos = QLineEdit(objectName = 'campoIdProductos')
         self.campoNombreProductos = QLineEdit(objectName = 'campoNombreProductos')
 
-        self.cNombreCliente.setPlaceholderText('Nombre del cliente')
+        self.cNombreCliente.setPlaceholderText('Nombre del Cliente')
         self.campoUsuario.setPlaceholderText('Usuario')
         self.campoContrasenia.setPlaceholderText('Contraseña')
-        self.campoNombreAgregar.setPlaceholderText('Nombre empleado')
-        self.campoUsuarioAgregar.setPlaceholderText('Usuario')
-        self.campoContraseniaAgregar.setPlaceholderText('Contraseña')
-        self.campoTipoAgregar.setPlaceholderText('Privilegio')
-        self.campoValorModificar.setPlaceholderText('Información a Modificar')
         self.campoUsuarioProductos.setPlaceholderText('Usuario')
         self.campoContraseniaProductos.setPlaceholderText('Contraseña')
         self.campoIdProductos.setPlaceholderText('ID')
         self.campoNombreProductos.setPlaceholderText('Nombre')
-        
+        self.campoNombreAgregar.setPlaceholderText('Nombre')
+        self.campoUsuarioAgregar.setPlaceholderText('Usuario')
+        self.campoContraseniaAgregar.setPlaceholderText('Contraseña')
+        self.campoTipoAgregar.setPlaceholderText('Tipo')
+        self.campoValorModificar.setPlaceholderText('Valor')
+
+        self.campoUsuario.setEnabled(False)
+        self.campoContrasenia.setEnabled(False)
+        self.campoUsuario.setEnabled(False)
+        self.campoNombreAgregar.setEnabled(False)
+        self.campoUsuarioAgregar.setEnabled(False)
+        self.campoContraseniaAgregar.setEnabled(False)
+        self.campoTipoAgregar.setEnabled(False)
+        self.campoValorModificar.setEnabled(False)
+
         #Etiquetas
         self.logoCafe = QLabel('') # Logo del Café
         self.pedidoLabel = QLabel('Pedidos')
@@ -260,6 +294,9 @@ class Window(QMainWindow):
         self.ventasLabel = QLabel('Ventas')
         self.ventasDiaL = QLabel('Ventas por día')
         self.ventasMesL = QLabel('Ventas por mes')
+        self.spacer = QLabel('')
+        self.eliminarUsers = QLabel('Eliminar')
+        self.modificarUser = QLabel('Modificar')
         self.pixmapCafe = QPixmap('./Recursos/Imagenes/logoCafe.png')
         self.pixmapCafe.scaled(20, 20)
         self.logoCafe.setPixmap(self.pixmapCafe)
@@ -278,6 +315,7 @@ class Window(QMainWindow):
         self.btnExtras.addItems(self.extras)
         self.btnTipoPedido.addItem('Tipo de Pedido')
         self.btnTipoPedido.addItems(self.tipoPedido)
+        #self.comboUsuario.addItems(self.admin)
 
         # Desactivando Items de QComboBox
         self.btnTipoCafe.model().item(0).setEnabled(False)
@@ -367,11 +405,81 @@ class Window(QMainWindow):
                                 background-color: rgb(150, 22, 22);
                             }
                                 """
+        self.comboAdminUsuariosSS = """
+                                    border-radius: 5px;
+                                    border: 1px solid #6b350a;
+                                    background-color: #d4c3b8;
+                                    color: #6b350a;
+                                    font: 14pt \"Arial\";
+                                    """
         self.tablaInventario.setStyleSheet('border: none;')
         self.inventarioLabel.setStyleSheet('font: 48pt \"Vladimir Script\";\ncolor: #6b350a;')
         self.materiaPrimaLabel.setStyleSheet('font: 48pt \"Vladimir Script\";\ncolor: #6b350a;')
         self.adminUsuariosLabel.setStyleSheet('font: 48pt \"Vladimir Script\";\ncolor: #6b350a;')
         self.adminProductosLabel.setStyleSheet('font: 48pt \"Vladimir Script\";\ncolor: #6b350a;')
+        self.adminUsuariosSS = """
+                                    QLineEdit { 
+                                        background-color: white; 
+                                        color: white; 
+                                        border: none;
+                                        font: 14pt \"Arial\";
+                                    }
+
+                                    QPushButton {
+                                        border-radius: 5px;
+                                        background-color: rgb(150, 22, 22);
+                                        border: 1px solid rgb(150, 22, 22);
+                                        color: white;
+                                        font: 14pt \"Arial\";
+                                    }
+
+                                    QComboBox {
+                                        border: none;
+                                        color: white;
+                                        background-color: white;
+                                    }
+
+                                    QComboBox::drop-down {
+                                        border-left-color: white;
+                                    }
+
+                                    QPushButton#btnIngresar {
+                                        background-color: white;
+                                        color: white;
+                                        border: none
+                                    }
+
+                                    QPushButton#btnEjecutarAgregar {
+                                        background-color: white;
+                                        color: white;
+                                        border: none
+                                    }
+
+                                    QPushButton#btnEjecutarEliminar {
+                                        background-color: white;
+                                        color: white;
+                                        border: none
+                                    }
+
+                                    QPushButton#btnAceptarModificar {
+                                        background-color: white;
+                                        color: white;
+                                        border: none
+                                    }
+
+                                    QPushButton#btnEjecutarModificar {
+                                        background-color: white;
+                                        color: white;
+                                        border: none
+                                    }
+                                """
+        self.comboEliminarUsers = """
+                                    border: 1px solid #6b350a;
+                                    background-color: white;
+                                    color: #6b350a;
+                                    font: 14pt \"Arial\";
+                                    border-radius: 5px;
+                                """
 
         # Configuración de Fuentes de los Widgets
         self.btnPedidos.setFont(self.negrita14) # -> Inicia Conf. QPushButton
@@ -399,6 +507,7 @@ class Window(QMainWindow):
         self.btnAdminMatP.setFixedSize(260, 50)
         self.btnAdminUsuarios.setFixedSize(260, 50)
         self.btnAdminProductos.setFixedSize(260, 50)
+        self.btnIngresar.setFixedWidth(120)
         self.btnFinalizarP.setFixedSize(self.anchoWPedido, self.largoWPedido)
         self.btnAgregarP.setFixedSize(self.anchoWPedido, self.largoWPedido) # <- Termina Conf. QPushButton
         self.btnTipoCafe.setFixedSize(self.anchoWPedido, self.largoWPedido) # -> Inicia conf. QComboBox
@@ -412,14 +521,27 @@ class Window(QMainWindow):
         self.pedidoLabel.setFixedSize(1290, 100)
         self.autenticarUsuariosLabel.setFixedHeight(50)
         self.lAutenticarUsuariosP.setFixedHeight(50)
-        self.tablaInventario.setFixedSize(1260, 200) # <- Termina Conf. QLabel
-
+        self.tablaInventario.setFixedSize(1260, 200)
+        self.btnAgregarUser.setFixedSize(100, 50)
+        self.campoNombreAgregar.setFixedWidth(350)
+        self.campoUsuarioAgregar.setFixedWidth(350)
+        self.campoContraseniaAgregar.setFixedWidth(350)
+        self.campoTipoAgregar.setFixedWidth(350)
+        self.btnEjecutarAgregar.setFixedSize(100, 50)
+        self.btnEliminarUser.setFixedSize(200, 50)
+        self.comboUsuario.setFixedWidth(175)
+        self.btnEjecutarEliminar.setFixedSize(100, 50)
+        self.campoValorModificar.setFixedWidth(350)
+        self.spacer.setFixedSize(40, 20)
+        
         # Alineación
         self.inventarioLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.ventasLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.materiaPrimaLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.adminProductosLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.adminUsuariosLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.autenticarUsuariosLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
 
         #Configuración de iconos
         self.btnPedidos.setIcon(QIcon('./Recursos/Iconos/tCafe.png'))
@@ -440,6 +562,7 @@ class Window(QMainWindow):
         self.tablaVentasDia.setHorizontalHeaderLabels(['Horas', 'Número de ventas'])
         self.tablaVentasMes.setHorizontalHeaderLabels(['Semana', 'Número de ventas'])
         self.tablaAdminProductos.setHorizontalHeaderLabels(['ID', 'Nombre'])
+        self.tablaUsuarios.setHorizontalHeaderLabels(['Nombre', 'Privilegio'])
         self.tablaInventario.resizeColumnsToContents()
         self.tablaVentasDia.resizeColumnsToContents()
         self.tablaVentasMes.resizeColumnsToContents()
@@ -456,6 +579,12 @@ class Window(QMainWindow):
         self.btnAdminProductos.clicked.connect(self.botonAdminProductos)
         self.btnAgregar.clicked.connect(self.btn_Agregar)
         self.btnEliminar.clicked.connect(self.btn_Eliminar)
+        self.btnAgregarUser.clicked.connect(self.btn_agregarUser)
+        self.btnEliminarUser.clicked.connect(self.btn_EliminarUser)
+        self.btnIngresar.clicked.connect(self.btn_Ingresar)
+        self.btnEjecutarAgregar.clicked.connect(self.btn_EjecutarAgregar)
+        self.btnEjecutarEliminar.clicked.connect(self.btn_EjecutarEliminar)
+        self.btnEjecutarModificar.clicked.connect(self.btn_EjecutarModificar)
 
         # Pestañas
         self.tab1 = self.ventanaPedidos()
@@ -596,6 +725,75 @@ class Window(QMainWindow):
         self.btnAceptar2.setStyleSheet('border: 1px solid brown;\nborder-radius: 5px;\nbackground-color: brown;\ncolor: white;')
         self.btnAceptar2.setEnabled(True)
 	
+    def btn_agregarUser(self):
+        self.campoNombreAgregar.setEnabled(True)
+        self.campoUsuarioAgregar.setEnabled(True)
+        self.campoContraseniaAgregar.setEnabled(True)
+        self.campoTipoAgregar.setEnabled(True)
+        self.btnEjecutarAgregar.setStyleSheet("""
+                                                border-radius: 5px;
+                                                background-color: rgb(150, 22, 22);
+                                                border: 1px solid rgb(150, 22, 22);
+                                                color: white;
+                                                font: 14pt \"Arial\";""")
+
+        self.campoNombreAgregar.setStyleSheet(self.comboAdminUsuariosSS)
+        self.campoUsuarioAgregar.setStyleSheet(self.comboAdminUsuariosSS)
+        self.campoContraseniaAgregar.setStyleSheet(self.comboAdminUsuariosSS)
+        self.campoTipoAgregar.setStyleSheet(self.comboAdminUsuariosSS)
+
+    def btn_EliminarUser(self):
+        self.autenticarUsuariosLabel.setText('Debe ser administrador para modificar o eliminar usuarios')
+        self.autenticarUsuariosLabel.setStyleSheet('color: red;\nfont: 14pt \"Arial\"')
+        
+        self.campoUsuario.setEnabled(True)
+        self.campoContrasenia.setEnabled(True)
+
+        self.campoUsuario.setStyleSheet('background-color: #d4c3b8;\ncolor: #6b350a;\nborder: 1px solid #6b350a;\nborder-radius: 5px;')
+        self.campoContrasenia.setStyleSheet('background-color: #d4c3b8;\ncolor: #6b350a;\nborder: 1px solid #6b350a;\nborder-radius: 5px;')
+
+        self.btnIngresar.setEnabled(True)
+        self.btnIngresar.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);\nborder: 1px solid rgb(150, 22, 22);
+                                        color: white;\nfont: 14pt \"Arial\";""")
+
+    def btn_Ingresar(self):
+        self.usuarioUsers = self.campoUsuario.text()
+        self.contraseniaUsers = self.campoContrasenia.text()
+        
+        if lg.busca_users(self, self.usuarioUsers) and lg.busca_password(self, self.contraseniaUsers):
+            self.eliminarUsers.setStyleSheet('color: brown;\nfont: 14pt \"Arial\"')
+            self.modificarUser.setStyleSheet('color: brown;\nfont: 14pt \"Arial\"')
+            self.comboUsuario.setStyleSheet(self.comboEliminarUsers)
+            self.comboCategoriaModificar.setStyleSheet(self.comboEliminarUsers)
+            self.comboOpcionesModificar.setStyleSheet(self.comboEliminarUsers)
+        
+            self.campoValorModificar.setEnabled(True)
+            self.campoValorModificar.setStyleSheet(self.comboAdminUsuariosSS)
+
+            self.btnEjecutarModificar.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);
+                                                    \nborder: 1px solid rgb(150, 22, 22);\ncolor: white;\nfont: 14pt \"Arial\";""")
+            self.btnEjecutarEliminar.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);
+                                                    \nborder: 1px solid rgb(150, 22, 22);\ncolor: white;\nfont: 14pt \"Arial\";""")
+            self.btnAceptarModificar.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);
+                                                    \nborder: 1px solid rgb(150, 22, 22);\ncolor: white;\nfont: 14pt \"Arial\";""")
+        else:
+            self.autenticarUsuariosLabel.setText('El usuario o la contraseña son incorrectos')
+        
+    def btn_EjecutarAgregar(self):
+        self.nombre = self.campoNombreAgregar.text()
+        self.usuario = self.campoUsuarioAgregar.text()
+        self.contrasenia = self.campoContraseniaAgregar.text()
+        self.tipo = self.campoTipoAgregar.text()
+
+    def btn_EjecutarEliminar(self):
+        self.comboIndiceUser = self.comboUsuario.currentIndex()
+        print(self.comboIndiceUser)
+
+    def btn_EjecutarModificar(self):
+        self.categoria = self.comboCategoriaModificar.currentIndex()
+        self.opciones = self.comboOpcionesModificar.currentIndex()
+        self.valor = self.campoValorModificar.text()
+    
     # Páginas
     def ventanaPedidos(self):
         main_layout = QVBoxLayout()
@@ -730,15 +928,18 @@ class Window(QMainWindow):
         return main
 
     def administracionUsuarios(self):
-        self.autenticarUsuariosLabel.setStyleSheet('background-color: black;')
+        self.eliminarUsers.setStyleSheet('color: white;')
+        self.modificarUser.setStyleSheet('color: white;')
         main_layout = QVBoxLayout()
         vbox = QVBoxLayout()
         vbox1 = QVBoxLayout()
         vbox2 = QVBoxLayout()
         vbox3 = QVBoxLayout()
+        vbox4 = QVBoxLayout()
         hbox = QHBoxLayout()
         hbox1 = QHBoxLayout()
         hbox2 = QHBoxLayout()
+        hbox3 = QHBoxLayout()
 
         vbox.addWidget(self.autenticarUsuariosLabel)
         vbox.addWidget(self.campoUsuario)
@@ -748,35 +949,42 @@ class Window(QMainWindow):
         hbox.addWidget(self.tablaUsuarios)
         hbox.addLayout(vbox)
 
-        vbox1.addWidget(self.btnAgregarUser)
+        vbox1.addWidget(self.btnAgregarUser, Qt.AlignmentFlag.AlignHCenter)
         vbox1.addWidget(self.campoNombreAgregar)
         vbox1.addWidget(self.campoUsuarioAgregar)
         vbox1.addWidget(self.campoContraseniaAgregar)
         vbox1.addWidget(self.campoTipoAgregar)
-        vbox1.addWidget(self.btnEjecutarAgregar)
+        vbox1.addWidget(self.btnEjecutarAgregar, Qt.AlignmentFlag.AlignHCenter)
 
-        vbox2.addWidget(self.btnEliminarUser)
+        vbox2.addWidget(self.eliminarUsers)
         vbox2.addWidget(self.comboUsuario)
         vbox2.addWidget(self.btnEjecutarEliminar)
 
         hbox1.addWidget(self.comboCategoriaModificar)
         hbox1.addWidget(self.btnAceptarModificar)
 
-        vbox3.addWidget(self.btnModificarUser)
+        vbox3.addWidget(self.modificarUser)
         vbox3.addLayout(hbox1)
         vbox3.addWidget(self.comboOpcionesModificar)
         vbox3.addWidget(self.campoValorModificar)
         vbox3.addWidget(self.btnEjecutarModificar)
 
+        hbox3.addLayout(vbox2)
+        hbox3.addWidget(self.spacer)
+        hbox3.addLayout(vbox3)
+        
+        vbox4.addWidget(self.btnEliminarUser)
+        vbox4.addLayout(hbox3)
+
         hbox2.addLayout(vbox1)
-        hbox2.addLayout(vbox2)
-        hbox2.addLayout(vbox3)
+        hbox2.addLayout(vbox4)
 
         main_layout.addWidget(self.adminUsuariosLabel)
         main_layout.addLayout(hbox)
         main_layout.addLayout(hbox2)
         main_layout.addWidget(self.confirmacionUsuariosLabel)
         main = QWidget()
+        main.setStyleSheet(self.adminUsuariosSS)
         main.setLayout(main_layout)
         return main
 
@@ -824,4 +1032,5 @@ if __name__ == '__main__':
     ui = Ui_Login()
     ui.setupUi(Login)
     Login.show()
+    #window.show()
     sys.exit(app.exec())
