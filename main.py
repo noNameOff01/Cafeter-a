@@ -863,11 +863,12 @@ class Window(QMainWindow):
             self.btnEjecutarEliminarP.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);
                                                     border: 1px solid rgb(150, 22, 22);\ncolor: white;
                                                     font: 14pt \"Arial\";""")
-            self.comboIdProductos.addItems(self.idTabla)
+            self.comboIdProductos.addItems(self.valoresCombo)
         else:
             self.lAutenticarUsuariosP.setText('Credenciales inválidas o no es administrador')
     
     def btn_EjecutarAgregarP(self):
+        self.valoresComboA = back.Productos.valoresCombo(self)
         self.id = self.campoIdProductos.text()
         self.nombre = self.campoNombreProductos.text()
 
@@ -877,10 +878,18 @@ class Window(QMainWindow):
         self.tablaAdminProductos.setItem(filas, 0, QTableWidgetItem(self.id))
         self.tablaAdminProductos.setItem(filas, 1, QTableWidgetItem(self.nombre))
 
-    def btn_EjecutarEliminarP(self):
+        back.Productos.agregarP(self, self.id, self.nombre)
         self.comboIdProductos.clear()
-        self.idEliminar = self.comboIdProductos.currentIndex()
-        self.tablaAdminProductos.removeRow(self.idEliminar)
+        self.comboIdProductos.addItems(self.valoresComboA)
+
+    def btn_EjecutarEliminarP(self):
+        self.valoresComboE = back.Productos.valoresCombo(self)
+        self.idEliminarTabla = self.comboIdProductos.currentIndex()
+        self.idEliminarBD = self.comboIdProductos.currentText()
+        self.tablaAdminProductos.removeRow(self.idEliminarTabla)
+        back.Productos.eliminarP(self, self.idEliminarBD)
+        self.comboIdProductos.clear()
+        self.comboIdProductos.addItems(self.valoresComboE)
 
     # Páginas
     def ventanaPedidos(self):
@@ -1095,7 +1104,8 @@ class Window(QMainWindow):
         return main
 
     def administracionProductos(self):
-        self.valoresTabla, self.idTabla = back.Productos.valores(self)
+        self.valoresTabla = back.Productos.valores(self)
+        self.valoresCombo = back.Productos.valoresCombo(self)
 
         self.tablaAdminProductos = QTableWidget(len(self.valoresTabla), 2)
         self.tablaAdminProductos.setEditTriggers(QAbstractItemView.NoEditTriggers)

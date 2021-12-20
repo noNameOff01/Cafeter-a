@@ -157,24 +157,52 @@ class Productos():
 
         listaTemp = []
         listaFinal = []
-        listaId = []
 
         for i in valoresTablaP:
             tipoSabores = i[1] + ' ' + i[2]
             listaTemp.append(i[0])
-            listaId.append(str(i[0]))
             listaTemp.append(tipoSabores)
             listaFinal.append(tuple(listaTemp))
             listaTemp = []
 
-        return listaFinal, listaId
+        return listaFinal
 
+    def valoresCombo(self):
+        conexion =  mysql.connector.connect( host='localhost',
+                                            database ='CafeteriaIS', 
+                                            user = 'root',
+                                            password ='admin')
+        curs = conexion.cursor()
+        curs.execute('SELECT idPedido FROM pedidos')
+        comboId = curs.fetchall()
+        curs.close()
+        valoresComboId = []
+        
+        for i in comboId:
+            valoresComboId.append(str(i[0]))
 
-valores = Valores()
-login = Login()
+        return valoresComboId
+
+    def agregarP(self, id1, nombre):
+        nombre = nombre.split()
+        agrega = f"INSERT INTO `cafeteriais`.`pedidos` (`idPedido`, `tipoBebida`, `sabor`, `tamaño`, `tipoLeche`, `extra0`, `extra1`, `extra2`, `extra3`, `extra4`, `cantidad`, `tipoConsumo`, `nombre`) VALUES ('{id1}', '{nombre[0]}', '{nombre[1]}', 'chico-mediano-grande', 'alm-ent-des', 'no', 'no', 'no', 'no', 'no', '0', 'loc-nLoc', 'no');"
+        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaIS', 
+                                            user = 'root', password ='admin')
+        curs = conexion.cursor()
+        curs.execute(agrega)
+        conexion.commit()
+        curs.close()
+
+    def eliminarP(self, id1):
+        elimina = f"DELETE FROM pedidos WHERE idPedido = {id1}"
+        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaIS', 
+                                            user = 'root', password ='admin')
+        curs = conexion.cursor()
+        curs.execute(elimina)
+        conexion.commit()
+        curs.close()
+
 
 producto = Productos()
 
-producto.valores()
-
-
+producto.valoresCombo()
