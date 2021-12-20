@@ -1,5 +1,31 @@
 import mysql.connector
 
+class Autenticacion():
+    def __init__(self) -> None:
+        pass
+
+    def autenticar(self, usuario, contrasenia):
+        conexion = mysql.connector.connect( host='localhost', database ='CafeteriaIS', 
+                                                user = 'root',password ='admin')
+        cursr = conexion.cursor()
+        cursr.execute("SELECT * FROM empleados")
+        empleadosInfo = cursr.fetchall()
+        cursr.close()
+
+        dictCredenciales = dict()
+        self.autenticacion = False
+        self.administrador = False
+
+        for i in empleadosInfo:
+            if usuario in i and i[6] == 'gerente':
+                self.administrador = True
+            dictCredenciales[i[7]] = i[8]
+        
+        if usuario in dictCredenciales and contrasenia == dictCredenciales[usuario]:
+            self.autenticacion = True
+
+        return self.autenticacion, self.administrador
+
 class Valores():
     def __init__(self):
         self._tipoCafe = []
@@ -79,30 +105,76 @@ class Login():
 
 class AdminUsers():
     def __init__(self):
+        pass
+
+
+
+class Inventario():
+    def __init__(self):
         self.conexion = mysql.connector.connect( host='localhost',
                                             database ='CafeteriaIS', 
                                             user = 'root',
                                             password ='admin')
 
-    def usuario(self):
-        cursr = self.conexion.cursor()
-        cursr.execute("SELECT * FROM empleados")
-        usuario = cursr.fetchall()
-        cursr.close()
-        
-        user = 'Circe'
-        gerente = False
-        
-        for i in usuario:
-            if user in i and i[6] == 'gerente':
-                gerente = True
-                break
 
-        print(gerente)
+
+class Productos():
+    def __init__(self):
+        pass
+        
+
+    def credenciales(self, usuario, contrasenia):
+        conexion = mysql.connector.connect( host='localhost', database ='CafeteriaIS', 
+                                                user = 'root',password ='admin')
+        cursr = conexion.cursor()
+        cursr.execute("SELECT * FROM empleados")
+        empleadosInfo = cursr.fetchall()
+        cursr.close()
+
+        dictCredenciales = dict()
+        self.autenticacion = False
+        self.administrador = False
+
+        for i in empleadosInfo:
+            if usuario in i and i[6] == 'gerente':
+                self.administrador = True
+            dictCredenciales[i[7]] = i[8]
+        
+        if usuario in dictCredenciales and contrasenia == dictCredenciales[usuario]:
+            self.autenticacion = True
+
+        return self.autenticacion, self.administrador
+
+    def valores(self):
+        conexion =  mysql.connector.connect( host='localhost',
+                                            database ='CafeteriaIS', 
+                                            user = 'root',
+                                            password ='admin')
+        curs = conexion.cursor()
+        curs.execute('SELECT idPedido, tipoBebida, sabor FROM pedidos')
+        valoresTablaP = curs.fetchall()
+        curs.close()
+
+        listaTemp = []
+        listaFinal = []
+        listaId = []
+
+        for i in valoresTablaP:
+            tipoSabores = i[1] + ' ' + i[2]
+            listaTemp.append(i[0])
+            listaId.append(str(i[0]))
+            listaTemp.append(tipoSabores)
+            listaFinal.append(tuple(listaTemp))
+            listaTemp = []
+
+        return listaFinal, listaId
+
 
 valores = Valores()
 login = Login()
-adminUsers = AdminUsers()
 
-adminUsers.usuario()
+producto = Productos()
+
+producto.valores()
+
 

@@ -179,6 +179,7 @@ class Window(QMainWindow):
         self.filasVentasMes = len(self.semanas)
         self.anchoWPedido = 180
         self.largoWPedido = 70
+        cAdminP = back.Productos()
         #self.admin, self.contrasenia = lg.valores(self)
 
         # ------ VENTANA PRINCIPAL ------
@@ -219,8 +220,7 @@ class Window(QMainWindow):
         self.btnEjecutarModificar = QPushButton('Ejecutar', objectName = 'btnEjecutarModificar')
         self.btnAceptarModificar = QPushButton('Aceptar', objectName = 'btnAceptarModificar')
         self.btnIngresarAdminProd = QPushButton('Ingresa', objectName = 'btnIngresarAdminProd')
-        self.btnAgregarProductos = QPushButton('Agregar', objectName = 'btnAgregarProductos')
-        self.btnEliminarProductos = QPushButton('Eliminar', objectName = 'btnEliminarProductos')
+        self.btnDelAddProductos = QPushButton('Agregar/Eliminar', objectName = 'btnDelAddProductos')
         self.btnEjecutarAgregarP = QPushButton('Ejecutar', objectName = 'btnEjecutarAgregarP')
         self.btnEjecutarEliminarP = QPushButton('Ejecutar', objectName = 'btnEjecutarEliminarP')
         
@@ -287,6 +287,7 @@ class Window(QMainWindow):
         self.confirmacionUsuariosLabel = QLabel('')
         self.lAutenticarUsuariosP = QLabel('')
         self.lConfirmacionOperacionP = QLabel('')
+        self.spacer1 = QLabel('')
         self.label2 = QLabel('')
         self.label3 = QLabel('')
         self.label4 = QLabel('')
@@ -315,7 +316,6 @@ class Window(QMainWindow):
         self.btnExtras.addItems(self.extras)
         self.btnTipoPedido.addItem('Tipo de Pedido')
         self.btnTipoPedido.addItems(self.tipoPedido)
-        #self.comboUsuario.addItems(self.admin)
 
         # Desactivando Items de QComboBox
         self.btnTipoCafe.model().item(0).setEnabled(False)
@@ -326,19 +326,11 @@ class Window(QMainWindow):
         self.btnTipoPedido.model().item(0).setEnabled(False)
 
         # Tablas
-        self.tablaInventario = QTableWidget(2, 6)
-        self.tablaVentasDia = QTableWidget(self.filasVentasDia, 2)
-        self.tablaVentasMes = QTableWidget(self.filasVentasMes, 2)
         self.tablaAMateriaPrima = QTableWidget(4, 3)
         self.tablaUsuarios = QTableWidget(3, 2)
-        self.tablaAdminProductos = QTableWidget(2, 2)
 
-        self.tablaInventario.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tablaVentasDia.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tablaVentasMes.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tablaAMateriaPrima.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tablaUsuarios.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tablaAdminProductos.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         # ESTTILOS
         # Hojas de Estilos
@@ -412,7 +404,6 @@ class Window(QMainWindow):
                                     color: #6b350a;
                                     font: 14pt \"Arial\";
                                     """
-        self.tablaInventario.setStyleSheet('border: none;')
         self.inventarioLabel.setStyleSheet('font: 48pt \"Vladimir Script\";\ncolor: #6b350a;')
         self.materiaPrimaLabel.setStyleSheet('font: 48pt \"Vladimir Script\";\ncolor: #6b350a;')
         self.adminUsuariosLabel.setStyleSheet('font: 48pt \"Vladimir Script\";\ncolor: #6b350a;')
@@ -480,6 +471,42 @@ class Window(QMainWindow):
                                     font: 14pt \"Arial\";
                                     border-radius: 5px;
                                 """
+        self.adminProductosSS = """
+                                    QLabel {
+                                        color: white;
+                                        font: 14pt \"Arial\"
+                                    }
+
+                                    QPushButton {
+                                        border: none;
+                                        background-color: white;
+                                        color: white;
+                                    }
+
+                                    QLineEdit {
+                                        border: none;
+                                        color: white;
+                                        background-color: white
+                                    }
+
+                                    QComboBox { 
+                                        border: none;
+                                        color: white;
+                                        background-color: white;
+                                    }
+
+                                    QComboBox::drop-down {
+                                        border-left-color: white;
+                                    }
+
+                                    QPushButton#btnDelAddProductos {
+                                        border-radius: 5px;
+                                        background-color: rgb(150, 22, 22);
+                                        border: 1px solid rgb(150, 22, 22);
+                                        color: white;
+                                        font: 14pt \"Arial\";
+                                    }
+                                """
 
         # Configuración de Fuentes de los Widgets
         self.btnPedidos.setFont(self.negrita14) # -> Inicia Conf. QPushButton
@@ -521,7 +548,6 @@ class Window(QMainWindow):
         self.pedidoLabel.setFixedSize(1290, 100)
         self.autenticarUsuariosLabel.setFixedHeight(50)
         self.lAutenticarUsuariosP.setFixedHeight(50)
-        self.tablaInventario.setFixedSize(1260, 200)
         self.btnAgregarUser.setFixedSize(100, 50)
         self.campoNombreAgregar.setFixedWidth(350)
         self.campoUsuarioAgregar.setFixedWidth(350)
@@ -533,6 +559,15 @@ class Window(QMainWindow):
         self.btnEjecutarEliminar.setFixedSize(100, 50)
         self.campoValorModificar.setFixedWidth(350)
         self.spacer.setFixedSize(40, 20)
+        self.campoUsuarioProductos.setFixedWidth(350)
+        self.campoContraseniaProductos.setFixedWidth(350)
+        self.btnIngresarAdminProd.setFixedWidth(120)
+        self.btnDelAddProductos.setFixedSize(200, 50)
+        self.campoIdProductos.setFixedWidth(350)
+        self.campoNombreProductos.setFixedWidth(350)
+        self.btnEjecutarAgregarP.setFixedSize(180, 40)
+        self.comboIdProductos.setFixedWidth(350)
+        self.btnEjecutarEliminarP.setFixedSize(180, 40)
         
         # Alineación
         self.inventarioLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -542,7 +577,6 @@ class Window(QMainWindow):
         self.adminUsuariosLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.autenticarUsuariosLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-
         #Configuración de iconos
         self.btnPedidos.setIcon(QIcon('./Recursos/Iconos/tCafe.png'))
         self.btnInventario.setIcon(QIcon('./Recursos/Iconos/inventario.png'))
@@ -558,17 +592,7 @@ class Window(QMainWindow):
         self.btnAdminUsuarios.setIconSize(QSize(35, 35))
 
         # Opciones para tablas
-        self.tablaInventario.setHorizontalHeaderLabels(['ID', 'Nombre del producto', 'Categoría', 'Ubicación', 'Cantidad', 'Costo unitario'])
-        self.tablaVentasDia.setHorizontalHeaderLabels(['Horas', 'Número de ventas'])
-        self.tablaVentasMes.setHorizontalHeaderLabels(['Semana', 'Número de ventas'])
-        self.tablaAdminProductos.setHorizontalHeaderLabels(['ID', 'Nombre'])
         self.tablaUsuarios.setHorizontalHeaderLabels(['Nombre', 'Privilegio'])
-        self.tablaInventario.resizeColumnsToContents()
-        self.tablaVentasDia.resizeColumnsToContents()
-        self.tablaVentasMes.resizeColumnsToContents()
-        self.tablaInventario.resizeRowsToContents()
-        self.tablaVentasDia.resizeRowsToContents()
-        self.tablaVentasMes.resizeRowsToContents()
 
         # Manejadores de eventos para páginas
         self.btnPedidos.clicked.connect(self.botonPedidos)
@@ -585,6 +609,10 @@ class Window(QMainWindow):
         self.btnEjecutarAgregar.clicked.connect(self.btn_EjecutarAgregar)
         self.btnEjecutarEliminar.clicked.connect(self.btn_EjecutarEliminar)
         self.btnEjecutarModificar.clicked.connect(self.btn_EjecutarModificar)
+        self.btnDelAddProductos.clicked.connect(self.btn_DelAddProductos)
+        self.btnIngresarAdminProd.clicked.connect(self.btn_IngresarAdminProd)
+        self.btnEjecutarAgregarP.clicked.connect(self.btn_EjecutarAgregarP)
+        self.btnEjecutarEliminarP.clicked.connect(self.btn_EjecutarEliminarP)
 
         # Pestañas
         self.tab1 = self.ventanaPedidos()
@@ -760,7 +788,9 @@ class Window(QMainWindow):
         self.usuarioUsers = self.campoUsuario.text()
         self.contraseniaUsers = self.campoContrasenia.text()
         
-        if lg.busca_users(self, self.usuarioUsers) and lg.busca_password(self, self.contraseniaUsers):
+        self.correcto, self.gerente = back.Autenticacion.autenticar(self, self.usuarioUsers, self.contraseniaUsers)
+        
+        if self.correcto and self.gerente:
             self.eliminarUsers.setStyleSheet('color: brown;\nfont: 14pt \"Arial\"')
             self.modificarUser.setStyleSheet('color: brown;\nfont: 14pt \"Arial\"')
             self.comboUsuario.setStyleSheet(self.comboEliminarUsers)
@@ -794,6 +824,64 @@ class Window(QMainWindow):
         self.opciones = self.comboOpcionesModificar.currentIndex()
         self.valor = self.campoValorModificar.text()
     
+    def btn_DelAddProductos(self):
+        self.campoUsuarioProductos.setEnabled(True)
+        self.campoContraseniaProductos.setEnabled(True)
+        self.btnIngresarAdminProd.setEnabled(True)
+
+        self.lAutenticarUsuariosP.setStyleSheet('color: red;')
+        self.lAutenticarUsuariosP.setText('Debe ser usuario o administrador para agregar o eliminar')    
+        self.campoUsuarioProductos.setStyleSheet(self.comboAdminUsuariosSS)
+        self.campoContraseniaProductos.setStyleSheet(self.comboAdminUsuariosSS)
+        self.btnIngresarAdminProd.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);
+                                                border: 1px solid rgb(150, 22, 22);\ncolor: white;
+                                                font: 14pt \"Arial\";""")
+
+    def btn_IngresarAdminProd(self):
+        self.usuarioProd = self.campoUsuarioProductos.text()
+        self.contraseniaProd = self.campoContraseniaProductos.text()
+
+        self.autenticacion, self.administrador = back.Productos.credenciales(self, self.usuarioProd, self.contraseniaProd)
+
+        if self.autenticacion and self.administrador:
+            self.campoIdProductos.setEnabled(True)
+            self.campoNombreProductos.setEnabled(True)
+            self.btnEjecutarAgregarP.setEnabled(True)
+            self.comboIdProductos.setEnabled(True)
+            self.btnEjecutarEliminarP.setEnabled(True)
+
+            self.labelAgregarP.setStyleSheet('color: red')
+            self.campoNombreProductos.setStyleSheet(self.comboAdminUsuariosSS)
+            self.campoIdProductos.setStyleSheet(self.comboAdminUsuariosSS)
+            self.btnEjecutarAgregarP.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);
+                                                    border: 1px solid rgb(150, 22, 22);\ncolor: white;
+                                                    font: 14pt \"Arial\";""")
+            self.labelEliminarP.setStyleSheet('color: red')
+            self.comboIdProductos.setStyleSheet("""border-radius: 5px;\nborder: 1px solid #6b350a;
+                                                background-color: #d4c3b8;\ncolor: #6b350a;
+                                                font: 14pt \"Arial\";""")
+            self.btnEjecutarEliminarP.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);
+                                                    border: 1px solid rgb(150, 22, 22);\ncolor: white;
+                                                    font: 14pt \"Arial\";""")
+            self.comboIdProductos.addItems(self.idTabla)
+        else:
+            self.lAutenticarUsuariosP.setText('Credenciales inválidas o no es administrador')
+    
+    def btn_EjecutarAgregarP(self):
+        self.id = self.campoIdProductos.text()
+        self.nombre = self.campoNombreProductos.text()
+
+        filas = self.tablaAdminProductos.rowCount()
+        self.tablaAdminProductos.insertRow(filas)
+
+        self.tablaAdminProductos.setItem(filas, 0, QTableWidgetItem(self.id))
+        self.tablaAdminProductos.setItem(filas, 1, QTableWidgetItem(self.nombre))
+
+    def btn_EjecutarEliminarP(self):
+        self.comboIdProductos.clear()
+        self.idEliminar = self.comboIdProductos.currentIndex()
+        self.tablaAdminProductos.removeRow(self.idEliminar)
+
     # Páginas
     def ventanaPedidos(self):
         main_layout = QVBoxLayout()
@@ -826,16 +914,34 @@ class Window(QMainWindow):
         return main
 
     def ventanaInventario(self):
+        self.tablaInventario = QTableWidget(2, 6)
+        self.tablaInventario.setFixedSize(1260, 200)
+        self.tablaInventario.setStyleSheet('border: none;')
+        self.tablaInventario.setHorizontalHeaderLabels(['ID', 'Nombre del producto', 'Categoría', 'Ubicación', 'Cantidad', 'Costo unitario'])
+        self.tablaInventario.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        
+
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.inventarioLabel)
         main_layout.addSpacerItem(QSpacerItem(10, 100))
-        main_layout.addWidget(self.tablaInventario)
+        main_layout.addWidget(self.tablaInventario, Qt.AlignmentFlag.AlignCenter)
         main_layout.addStretch(5)
         main = QWidget()
         main.setLayout(main_layout)
         return main
         
     def ventanaVentas(self):
+        self.tablaVentasDia = QTableWidget(self.filasVentasDia, 2)
+        self.tablaVentasMes = QTableWidget(self.filasVentasMes, 2)
+        self.tablaVentasDia.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tablaVentasMes.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tablaVentasDia.setHorizontalHeaderLabels(['Horas', 'Número de ventas'])
+        self.tablaVentasMes.setHorizontalHeaderLabels(['Semana', 'Número de ventas'])
+        self.tablaVentasDia.resizeColumnsToContents()
+        self.tablaVentasMes.resizeColumnsToContents()
+        self.tablaVentasDia.resizeRowsToContents()
+        self.tablaVentasMes.resizeRowsToContents()
+
         for i in range(0, len(self.horas)):
             self.tablaVentasDia.setItem(i, 0, QTableWidgetItem(str(self.horas[i])))
             self.tablaVentasDia.setItem(i, 1, QTableWidgetItem(str(self.ventasH[i])))
@@ -989,6 +1095,33 @@ class Window(QMainWindow):
         return main
 
     def administracionProductos(self):
+        self.valoresTabla, self.idTabla = back.Productos.valores(self)
+
+        self.tablaAdminProductos = QTableWidget(len(self.valoresTabla), 2)
+        self.tablaAdminProductos.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tablaAdminProductos.setHorizontalHeaderLabels(['ID', 'Nombre'])
+
+        self.labelAgregarP =  QLabel('Agregar')
+        self.labelEliminarP = QLabel('Eliminar')
+
+        self.campoUsuarioProductos.setEnabled(False)
+        self.campoContraseniaProductos.setEnabled(False)
+        self.btnIngresarAdminProd.setEnabled(False)
+        self.campoIdProductos.setEnabled(False)
+        self.campoNombreProductos.setEnabled(False)
+        self.btnEjecutarAgregarP.setEnabled(False)
+        self.comboIdProductos.setEnabled(False)
+        self.btnEjecutarEliminarP.setEnabled(False)
+
+        self.labelAgregarP.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.spacer1.setFixedSize(100, 20)
+
+        for i, val in enumerate(self.valoresTabla):
+            self.tablaAdminProductos.setItem(i, 0, QTableWidgetItem(str(val[0])))
+            self.tablaAdminProductos.setItem(i, 1, QTableWidgetItem(val[1]))
+
+        self.tablaAdminProductos.setStyleSheet('border: none;')
         main_layout = QVBoxLayout()
         vbox = QVBoxLayout()
         vbox1 = QVBoxLayout()
@@ -1004,33 +1137,36 @@ class Window(QMainWindow):
         hbox.addWidget(self.tablaAdminProductos)
         hbox.addLayout(vbox)
 
-        vbox1.addWidget(self.btnAgregarProductos)
+        vbox1.addWidget(self.labelAgregarP)
         vbox1.addWidget(self.campoIdProductos)
         vbox1.addWidget(self.campoNombreProductos)
         vbox1.addWidget(self.btnEjecutarAgregarP)
 
-        vbox2.addWidget(self.btnEliminarProductos)
+        vbox2.addWidget(self.labelEliminarP)
         vbox2.addWidget(self.comboIdProductos)
         vbox2.addWidget(self.btnEjecutarEliminarP)
 
         hbox1.addLayout(vbox1)
+        hbox1.addWidget(self.spacer1)
         hbox1.addLayout(vbox2)
 
         main_layout.addWidget(self.adminProductosLabel)
         main_layout.addLayout(hbox)
+        main_layout.addWidget(self.btnDelAddProductos, Qt.AlignmentFlag.AlignVCenter)
         main_layout.addLayout(hbox1)
         main_layout.addWidget(self.lConfirmacionOperacionP)
         main = QWidget()
+        main.setStyleSheet(self.adminProductosSS)
         main.setLayout(main_layout)
         return main
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    #window = Window()
-    Login = QMainWindow()
-    ui = Ui_Login()
-    ui.setupUi(Login)
-    Login.show()
-    #window.show()
+    window = Window()
+    # Login = QMainWindow()
+    # ui = Ui_Login()
+    # ui.setupUi(Login)
+    # Login.show()
+    window.show()
     sys.exit(app.exec())
