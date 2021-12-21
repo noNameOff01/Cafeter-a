@@ -2,7 +2,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import back
-from back import AdminMatP, Valores
+from back import AdminMatP, Pedidos
 from back import Ventas as ven
 from back import Login as lg
 import sys
@@ -167,16 +167,9 @@ class Ui_Login(object):
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.tipoCafe = Valores.tipoCafe(self)
-        self.sabor = Valores.sabor(self)
-        self.tamanio = Valores.tamanio(self)
-        self.tipoLeche = Valores.tipoLeche(self)
-        self.extras = Valores.extras(self)
-        self.tipoPedido = Valores.tipoPedido(self)
         self.horas, self.ventasH = ven.ventasD(self)
         self.filasVentasDia = len(self.horas)
         self.semanas, self.ventasM = ven.ventasM(self)
-        self.filasVentasMes = len(self.semanas)
         self.anchoWPedido = 180
         self.largoWPedido = 70
         cAdminP = back.Productos()
@@ -310,26 +303,7 @@ class Window(QMainWindow):
         self.pedidoLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # Items de Combobox
-        self.btnTipoCafe.addItem('Tipo de Café')
-        self.btnTipoCafe.addItems(self.tipoCafe)
-        self.btnSabor.addItem('Sabor')
-        self.btnSabor.addItems(self.sabor)
-        self.btnTamanio.addItem('Tamaño')
-        self.btnTamanio.addItems(self.tamanio)
-        self.btnTipoLeche.addItem('Tipo de Leche')
-        self.btnTipoLeche.addItems(self.tipoLeche)
-        self.btnExtras.addItem('Extras')
-        self.btnExtras.addItems(self.extras)
-        self.btnTipoPedido.addItem('Tipo de Pedido')
-        self.btnTipoPedido.addItems(self.tipoPedido)
-
-        # Desactivando Items de QComboBox
-        self.btnTipoCafe.model().item(0).setEnabled(False)
-        self.btnSabor.model().item(0).setEnabled(False)
-        self.btnTamanio.model().item(0).setEnabled(False)
-        self.btnTipoLeche.model().item(0).setEnabled(False)
-        self.btnExtras.model().item(0).setEnabled(False)
-        self.btnTipoPedido.model().item(0).setEnabled(False)
+        
 
         # Tablas
         self.tablaUsuarios = QTableWidget(3, 2)
@@ -798,7 +772,6 @@ class Window(QMainWindow):
 
     def btn_EjecutarEliminar(self):
         self.comboIndiceUser = self.comboUsuario.currentIndex()
-        print(self.comboIndiceUser)
 
     def btn_EjecutarModificar(self):
         self.categoria = self.comboCategoriaModificar.currentIndex()
@@ -937,22 +910,51 @@ class Window(QMainWindow):
         
     # Páginas
     def ventanaPedidos(self):
+        valoresPedido = back.Pedidos()
+        tipoCafe, sabor, tamanio, tipoLeche, extras, tipoPedido = valoresPedido.valores()
+        
+        self.btnTipoCafe.addItem('Tipo de Café')
+        self.btnTipoCafe.addItems(tipoCafe)
+        self.btnSabor.addItem('Sabor')
+        self.btnSabor.addItems(sabor)
+        self.btnTamanio.addItem('Tamaño')
+        self.btnTamanio.addItems(tamanio)
+        self.btnTipoLeche.addItem('Tipo de Leche')
+        self.btnTipoLeche.addItems(tipoLeche)
+        self.btnExtras.addItem('Extras')
+        self.btnExtras.addItems(extras)
+        self.btnTipoPedido.addItem('Tipo de Pedido')
+        self.btnTipoPedido.addItems(tipoPedido)
+
+        # Desactivando Items de QComboBox
+        self.btnTipoCafe.model().item(0).setEnabled(False)
+        self.btnSabor.model().item(0).setEnabled(False)
+        self.btnTamanio.model().item(0).setEnabled(False)
+        self.btnTipoLeche.model().item(0).setEnabled(False)
+        self.btnExtras.model().item(0).setEnabled(False)
+        self.btnTipoPedido.model().item(0).setEnabled(False)
+
+        self.spinbox = QSpinBox()
+        self.spinbox.setStyleSheet("""border: 1px solid brown;\nborder-radius: 5px;
+                                background-color: rgb(255, 87, 87);\ncolor: white;""")
+        self.spinbox.setFont(self.negrita14)
+        self.spinbox.setFixedSize(self.anchoWPedido, self.largoWPedido)
         main_layout = QVBoxLayout()
         hbox = QHBoxLayout()
         hbox1 = QHBoxLayout()
         hbox2 = QHBoxLayout()
         hbox3 = QHBoxLayout()
 
+        hbox.addWidget(self.spinbox)
         hbox.addWidget(self.btnTipoCafe)
         hbox.addWidget(self.btnSabor)
-        hbox.addWidget(self.btnTamanio)
         
+        hbox1.addWidget(self.btnTamanio)
         hbox1.addWidget(self.btnTipoLeche)
         hbox1.addWidget(self.btnExtras)
-        hbox1.addWidget(self.btnTipoPedido)
         
+        hbox2.addWidget(self.btnTipoPedido)
         hbox2.addWidget(self.cNombreCliente)
-        hbox2.addWidget(self.btnAgregarP)
         hbox2.addWidget(self.btnFinalizarP)
         
         main_layout.addWidget(self.pedidoLabel)
@@ -960,6 +962,7 @@ class Window(QMainWindow):
         main_layout.addLayout(hbox)
         main_layout.addLayout(hbox1)
         main_layout.addLayout(hbox2)
+        main_layout.addWidget(self.spinbox)
 
         main = QWidget()
         main.setStyleSheet(self.pedidoSS)
@@ -984,6 +987,8 @@ class Window(QMainWindow):
         return main
         
     def ventanaVentas(self):
+        self.ventas = back.Vent()
+        self.filasVentasMes = self.ventas.valoresMes()
         self.tablaVentasDia = QTableWidget(self.filasVentasDia, 2)
         self.tablaVentasMes = QTableWidget(self.filasVentasMes, 2)
         self.tablaVentasDia.setEditTriggers(QAbstractItemView.NoEditTriggers)

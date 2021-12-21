@@ -1,4 +1,6 @@
 import mysql.connector
+import calendar
+from datetime import date
 
 class Autenticacion():
     def __init__(self) -> None:
@@ -27,39 +29,81 @@ class Autenticacion():
         return self.autenticacion, self.administrador
 
 
-class Valores():
+class Pedidos():
     def __init__(self):
-        self._tipoCafe = []
-        self._sabor = []
-        self._tamanio = []
-        self._tipoLeche = []
-        self._extras = []
-        self._tipoPedido = []
-    
-    def tipoCafe(self):
-        self._tipoCafe = ['Frío', 'Caliente']
-        return self._tipoCafe
+        pass
 
-    def sabor(self):
-        self._sabor = ['    Cappuchino', '    Mocca']
-        return self._sabor
+    def valores(self):
+        conexion = mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
+                                            user = 'root', password ='admin')
 
-    def tamanio(self):
-        self._tamanio = ['    Chico', '    Mediano', '   Grande']
-        return self._tamanio
+        cursorPedidos = conexion.cursor()
+        cursorPedidos.execute('SELECT tipoBebida, sabor, tamaño, tipoLeche, extra0, tipoConsumo FROM pedidos')
+        valPedido = cursorPedidos.fetchall()
+        cursorPedidos.close()
 
-    def tipoLeche(self):
-        self._tipoLeche = ['    Entera', '    Deslactosada', '    Coco', '    Almendras']
-        return self._tipoLeche
+        tipoCafe = []
+        flavour = dict()
+        tamanio = []
+        tipoLeche = []
+        extras = []
+        tipoPedido = []
+        sabores = []
+        sabores = []
+        tamanioDict = {'ch': 'Chico',
+                        'g': 'Grande',
+                        'm': 'Mediano'}
+        lecheDict = {'alm': 'Almendras',
+                    'enter': 'Entera',
+                    'des': 'Deslactosada'}
+        pedidoDict = {'loc': 'Local',
+                    'nloc': 'Para llevar'}
+        tam = valPedido[0][2].split('-')
+        leche = valPedido[0][3].split('-')
+        pedido = valPedido[0][5].split('-')
 
-    def extras(self):
-        self._extras = ['    cup holder']
-        return self._extras
+        tuplaSabor = []
+        listaSabor = []
+        for i in valPedido:
+            cafe = i[0]
+            sabor = i[1]
+            extra = i[4]
+            
 
-    def tipoPedido(self):
-        self._tipoPedido = ['    Consumo Local', '    Para Llevar']
-        return self._tipoPedido
+            if cafe in flavour:
+                listaSabor = list(flavour[cafe])
+            
+            listaSabor.append(sabor)
+            tuplaSabor = tuple(listaSabor)
+            flavour[cafe] = tuplaSabor
 
+            listaSabor.clear()
+
+            if cafe not in tipoCafe:
+                tipoCafe.append(cafe)
+
+            if extra not in extras:
+                extras.append(extra)
+        
+        for i in tam:
+            tamanio.append(tamanioDict[i])
+        
+        for i in leche:
+            tipoLeche.append(lecheDict[i])
+        
+        for i in pedido:
+            tipoPedido.append(pedidoDict[i])
+
+        sabores = []
+
+
+        for key, val in flavour.items():
+            sabores.append(key)
+            for i1 in val:
+                sabores.append(i1)
+
+        return tipoCafe, sabores, tamanio, tipoLeche, extras, tipoPedido
+        
 
 class Ventas():
     def __init__(self):
@@ -124,8 +168,6 @@ class Inventario():
         miCursor.execute('SELECT * FROM empleados')
         materiaP = miCursor.fetchall()
         miCursor.close()
-
-        print(materiaP)
 
 
 class Productos():
@@ -243,9 +285,42 @@ class AdminMatP():
         curs.execute(eliminaId)
         conexion.commit()
         curs.close()
-    
+
+
+class Vent():
+    def __init__(self) -> None:
+        pass
+
+    def valoresMes(self):
+        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
+                                            user = 'root', password ='admin')
+        cursor = conexion.cursor()
+        cursor.execute('SELECT montoTotal, fecha FROM reportesventas')
+        valMes = cursor.fetchall()
+        cursor.close()
+
+        fecha = date.today()
+        noFilas = len(calendar.monthcalendar(2021, fecha.month))
+
+        listaTemp = []
+        listaFinal = []
+        listaFecha = []
+
+        for i, val in enumerate(valMes):
+            lol = val[1].split()
+            listaTemp.append(val[0])
+            listaFecha = lol[0].split('-')
+            for j in listaFecha:
+                listaTemp.append(j)
+            listaTemp.append(lol[1])
+            listaFinal.append(tuple(listaTemp))
+            listaTemp.clear()
+
+        return noFilas
+
 
 producto = Productos()
 inventario = Inventario()
+ventas = Vent()
+val = Pedidos()
 
-# inventario.valores()
