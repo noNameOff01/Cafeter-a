@@ -1,5 +1,5 @@
-create database CafeteriaIS;
-use CafeteriaIS;
+create database CafeteriaDB;
+use CafeteriaDB;
 CREATE TABLE Empleados (
     idEmpleado INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     nombre VARCHAR(25) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE Empleados (
     users VARCHAR(10) NOT NULL,
     Password VARCHAR(16) NOT NULL
 );
-CREATE TABLE Pedidos (empleados
+CREATE TABLE Pedidos (
     idPedido BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     tipoBebida VARCHAR(25) NOT NULL,
     sabor VARCHAR(25) NOT NULL,

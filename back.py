@@ -5,7 +5,7 @@ class Autenticacion():
         pass
 
     def autenticar(self, usuario, contrasenia):
-        conexion = mysql.connector.connect( host='localhost', database ='CafeteriaIS', 
+        conexion = mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
                                                 user = 'root',password ='admin')
         cursr = conexion.cursor()
         cursr.execute("SELECT * FROM empleados")
@@ -83,7 +83,7 @@ class Ventas():
 class Login():
     def __init__(self):
         self.conexion = mysql.connector.connect( host='localhost',
-                                            database ='CafeteriaIS', 
+                                            database ='CafeteriaDB', 
                                             user = 'root',
                                             password ='admin')
 
@@ -107,14 +107,23 @@ class AdminUsers():
     def __init__(self):
         pass
 
-
-
 class Inventario():
-    def __init__(self):
-        self.conexion = mysql.connector.connect( host='localhost',
-                                            database ='CafeteriaIS', 
+    def __init_(self):
+        pass
+
+    def valores(self):
+        conexion = mysql.connector.connect( host='localhost',
+                                            database ='cafeteriaDB', 
                                             user = 'root',
                                             password ='admin')
+
+        miCursor = conexion.cursor()
+        miCursor.execute('SELECT * FROM empleados')
+        materiaP = miCursor.fetchall()
+        miCursor.close()
+
+        print(materiaP)
+
 
 
 
@@ -124,7 +133,7 @@ class Productos():
         
 
     def credenciales(self, usuario, contrasenia):
-        conexion = mysql.connector.connect( host='localhost', database ='CafeteriaIS', 
+        conexion = mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
                                                 user = 'root',password ='admin')
         cursr = conexion.cursor()
         cursr.execute("SELECT * FROM empleados")
@@ -147,7 +156,7 @@ class Productos():
 
     def valores(self):
         conexion =  mysql.connector.connect( host='localhost',
-                                            database ='CafeteriaIS', 
+                                            database ='CafeteriaDB', 
                                             user = 'root',
                                             password ='admin')
         curs = conexion.cursor()
@@ -169,7 +178,7 @@ class Productos():
 
     def valoresCombo(self):
         conexion =  mysql.connector.connect( host='localhost',
-                                            database ='CafeteriaIS', 
+                                            database ='CafeteriaDB', 
                                             user = 'root',
                                             password ='admin')
         curs = conexion.cursor()
@@ -185,8 +194,8 @@ class Productos():
 
     def agregarP(self, id1, nombre):
         nombre = nombre.split()
-        agrega = f"INSERT INTO `cafeteriais`.`pedidos` (`idPedido`, `tipoBebida`, `sabor`, `tamaño`, `tipoLeche`, `extra0`, `extra1`, `extra2`, `extra3`, `extra4`, `cantidad`, `tipoConsumo`, `nombre`) VALUES ('{id1}', '{nombre[0]}', '{nombre[1]}', 'chico-mediano-grande', 'alm-ent-des', 'no', 'no', 'no', 'no', 'no', '0', 'loc-nLoc', 'no');"
-        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaIS', 
+        agrega = f"INSERT INTO `cafeteriadb`.`pedidos` (`idPedido`, `tipoBebida`, `sabor`, `tamaño`, `tipoLeche`, `extra0`, `extra1`, `extra2`, `extra3`, `extra4`, `cantidad`, `tipoConsumo`, `nombre`) VALUES ('{id1}', '{nombre[0]}', '{nombre[1]}', 'chico-mediano-grande', 'alm-ent-des', 'no', 'no', 'no', 'no', 'no', '0', 'loc-nLoc', 'no');"
+        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
                                             user = 'root', password ='admin')
         curs = conexion.cursor()
         curs.execute(agrega)
@@ -195,7 +204,7 @@ class Productos():
 
     def eliminarP(self, id1):
         elimina = f"DELETE FROM pedidos WHERE idPedido = {id1}"
-        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaIS', 
+        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
                                             user = 'root', password ='admin')
         curs = conexion.cursor()
         curs.execute(elimina)
@@ -204,5 +213,6 @@ class Productos():
 
 
 producto = Productos()
+inventario = Inventario()
 
-producto.valoresCombo()
+# inventario.valores()

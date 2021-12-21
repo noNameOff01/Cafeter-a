@@ -223,6 +223,7 @@ class Window(QMainWindow):
         self.btnDelAddProductos = QPushButton('Agregar/Eliminar', objectName = 'btnDelAddProductos')
         self.btnEjecutarAgregarP = QPushButton('Ejecutar', objectName = 'btnEjecutarAgregarP')
         self.btnEjecutarEliminarP = QPushButton('Ejecutar', objectName = 'btnEjecutarEliminarP')
+        self.btnAutenticarMatP = QPushButton('Ingresar', objectName = 'btnAutenticarMatP')
         
         # Combo box
         self.btnTipoCafe = QComboBox(objectName = 'btnTipoCafe') # Menú desplegable "Tipo de Café"
@@ -234,7 +235,6 @@ class Window(QMainWindow):
         self.comboCategoriaModificar = QComboBox(objectName = 'comboCategoriaModificar')
         self.comboOpcionesModificar = QComboBox(objectName = 'comboOpcionesModificar')
         self.comboUsuario = QComboBox(objectName = 'comboUsuario')
-        self.comboIdProductos = QComboBox(objectName = 'comboIdProductos')
 
         # Campos de texto
         self.cNombreCliente = QLineEdit(objectName = 'cNombreCliente') # Campo de texto "Nombre del cliente"
@@ -253,6 +253,9 @@ class Window(QMainWindow):
         self.campoContraseniaProductos = QLineEdit(objectName = 'campoContraseniaProductos')
         self.campoIdProductos = QLineEdit(objectName = 'campoIdProductos')
         self.campoNombreProductos = QLineEdit(objectName = 'campoNombreProductos')
+        self.campoIdProductosE = QLineEdit(objectName = 'comboIdProductos')
+        self.campoUsuarioMatP = QLineEdit(objectName = 'campoUsuarioMatP')
+        self.campoContraseniaMatP = QLineEdit(objectName = 'campoContraseniaMatP')
 
         self.cNombreCliente.setPlaceholderText('Nombre del Cliente')
         self.campoUsuario.setPlaceholderText('Usuario')
@@ -266,6 +269,9 @@ class Window(QMainWindow):
         self.campoContraseniaAgregar.setPlaceholderText('Contraseña')
         self.campoTipoAgregar.setPlaceholderText('Tipo')
         self.campoValorModificar.setPlaceholderText('Valor')
+        self.campoIdProductosE.setPlaceholderText('Id Producto a eliminar')
+        self.campoUsuarioMatP.setPlaceholderText('Usuario')
+        self.campoContraseniaMatP.setPlaceholderText('Contraseña')
 
         self.campoUsuario.setEnabled(False)
         self.campoContrasenia.setEnabled(False)
@@ -566,7 +572,7 @@ class Window(QMainWindow):
         self.campoIdProductos.setFixedWidth(350)
         self.campoNombreProductos.setFixedWidth(350)
         self.btnEjecutarAgregarP.setFixedSize(180, 40)
-        self.comboIdProductos.setFixedWidth(350)
+        self.campoIdProductosE.setFixedWidth(350)
         self.btnEjecutarEliminarP.setFixedSize(180, 40)
         
         # Alineación
@@ -847,7 +853,7 @@ class Window(QMainWindow):
             self.campoIdProductos.setEnabled(True)
             self.campoNombreProductos.setEnabled(True)
             self.btnEjecutarAgregarP.setEnabled(True)
-            self.comboIdProductos.setEnabled(True)
+            self.campoIdProductosE.setEnabled(True)
             self.btnEjecutarEliminarP.setEnabled(True)
 
             self.labelAgregarP.setStyleSheet('color: red')
@@ -857,13 +863,12 @@ class Window(QMainWindow):
                                                     border: 1px solid rgb(150, 22, 22);\ncolor: white;
                                                     font: 14pt \"Arial\";""")
             self.labelEliminarP.setStyleSheet('color: red')
-            self.comboIdProductos.setStyleSheet("""border-radius: 5px;\nborder: 1px solid #6b350a;
+            self.campoIdProductosE.setStyleSheet("""border-radius: 5px;\nborder: 1px solid #6b350a;
                                                 background-color: #d4c3b8;\ncolor: #6b350a;
                                                 font: 14pt \"Arial\";""")
             self.btnEjecutarEliminarP.setStyleSheet("""border-radius: 5px;\nbackground-color: rgb(150, 22, 22);
                                                     border: 1px solid rgb(150, 22, 22);\ncolor: white;
                                                     font: 14pt \"Arial\";""")
-            self.comboIdProductos.addItems(self.valoresCombo)
         else:
             self.lAutenticarUsuariosP.setText('Credenciales inválidas o no es administrador')
     
@@ -879,17 +884,17 @@ class Window(QMainWindow):
         self.tablaAdminProductos.setItem(filas, 1, QTableWidgetItem(self.nombre))
 
         back.Productos.agregarP(self, self.id, self.nombre)
-        self.comboIdProductos.clear()
-        self.comboIdProductos.addItems(self.valoresComboA)
 
     def btn_EjecutarEliminarP(self):
-        self.valoresComboE = back.Productos.valoresCombo(self)
-        self.idEliminarTabla = self.comboIdProductos.currentIndex()
-        self.idEliminarBD = self.comboIdProductos.currentText()
-        self.tablaAdminProductos.removeRow(self.idEliminarTabla)
-        back.Productos.eliminarP(self, self.idEliminarBD)
-        self.comboIdProductos.clear()
-        self.comboIdProductos.addItems(self.valoresComboE)
+        self.eliminar = str(self.campoIdProductosE.text())
+        nFilas = self.tablaAdminProductos.rowCount()
+        self.indices = dict()
+        
+        for i in range(0, nFilas):
+            self.indices[self.tablaAdminProductos.item(i, 0).text()] = i
+        
+        self.tablaAdminProductos.removeRow(self.indices[self.eliminar])
+        back.Productos.eliminarP(self, self.eliminar)
 
     # Páginas
     def ventanaPedidos(self):
@@ -976,6 +981,17 @@ class Window(QMainWindow):
         return main
 
     def ventanaAdminMatP(self):
+        self.cT1.setEnabled(False)
+        self.cT2.setEnabled(False)
+        self.cT3.setEnabled(False)
+        self.cT4.setEnabled(False)
+        self.campoUsuarioMatP.setEnabled(False)
+        self.campoContraseniaMatP.setEnabled(False)
+
+        self.btnAceptar1.setEnabled(False)
+        self.btnAceptar2.setEnabled(False)
+        self.btnAutenticarMatP.setEnabled(False)
+
         self.materiaPrimaLabel.setText('Administración de Materia Prima')
 
         self.cT1.setStyleSheet("border: none;\nbackground-color: white;")
@@ -983,23 +999,17 @@ class Window(QMainWindow):
         self.cT3.setStyleSheet("border: none;\nbackground-color: white;")
         self.cT4.setStyleSheet("border: none;\nbackground-color: white;")
 
-        self.cT1.setEnabled(False)
-        self.cT2.setEnabled(False)
-        self.cT3.setEnabled(False)
-        self.cT4.setEnabled(False)
-
         self.btnAgregar.setStyleSheet('border: 1px solid green;\nborder-radius: 5px;\nbackground-color: green;\ncolor: white;')
         self.btnEliminar.setStyleSheet('border: 1px solid red;\nborder-radius: 5px;\nbackground-color: red;\ncolor: white;')
         self.btnAceptar1.setStyleSheet('border: 1px solid white;\nborder-radius: 5px;\nbackground-color: white;\ncolor: white;')
         self.btnAceptar2.setStyleSheet('border: 1px solid white;\nborder-radius: 5px;\nbackground-color: white;\ncolor: white;')
+        self.btnAutenticarMatP.setStyleSheet('border: 1px solid white;\nborder-radius: 5px;\nbackground-color: white;\ncolor: white;')
 
         self.btnAgregar.setFont(self.negrita14)
         self.btnEliminar.setFont(self.negrita14)
         self.btnAceptar1.setFont(self.negrita14)
         self.btnAceptar2. setFont(self.negrita14)
-
-        self.btnAceptar1.setEnabled(False)
-        self.btnAceptar2.setEnabled(False)
+        self.btnAutenticarMatP.setFont(self.negrita14)
         
         self.tablaAMateriaPrima.setHorizontalHeaderLabels(['ID', 'Nombre', 'Categoría'])
         self.tablaAMateriaPrima.resizeRowsToContents()
@@ -1008,10 +1018,19 @@ class Window(QMainWindow):
         
         vbox = QVBoxLayout()
         vbox1 = QVBoxLayout()
+        vbox2 = QVBoxLayout()
         main_layout = QVBoxLayout()
         hbox = QHBoxLayout()
         hbox1 = QHBoxLayout()
         hbox2 = QHBoxLayout()
+        hbox3 = QHBoxLayout()
+
+        vbox2.addWidget(self.campoUsuarioMatP)
+        vbox2.addWidget(self.campoContraseniaMatP)
+        vbox2.addWidget(self.btnAutenticarMatP)
+
+        hbox3.addWidget(self.tablaAMateriaPrima)
+        hbox3.addLayout(vbox2)
 
         hbox.addWidget(self.label2)
         hbox.addWidget(self.label3)
@@ -1035,7 +1054,7 @@ class Window(QMainWindow):
         hbox2.addLayout(vbox1)
 
         main_layout.addWidget(self.materiaPrimaLabel)
-        main_layout.addWidget(self.tablaAMateriaPrima, Qt.AlignmentFlag.AlignVCenter)
+        main_layout.addLayout(hbox3)
         main_layout.addLayout(hbox2)
         
         main = QWidget()
@@ -1120,7 +1139,7 @@ class Window(QMainWindow):
         self.campoIdProductos.setEnabled(False)
         self.campoNombreProductos.setEnabled(False)
         self.btnEjecutarAgregarP.setEnabled(False)
-        self.comboIdProductos.setEnabled(False)
+        self.campoIdProductosE.setEnabled(False)
         self.btnEjecutarEliminarP.setEnabled(False)
 
         self.labelAgregarP.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -1153,7 +1172,7 @@ class Window(QMainWindow):
         vbox1.addWidget(self.btnEjecutarAgregarP)
 
         vbox2.addWidget(self.labelEliminarP)
-        vbox2.addWidget(self.comboIdProductos)
+        vbox2.addWidget(self.campoIdProductosE)
         vbox2.addWidget(self.btnEjecutarEliminarP)
 
         hbox1.addLayout(vbox1)
