@@ -26,6 +26,7 @@ class Autenticacion():
 
         return self.autenticacion, self.administrador
 
+
 class Valores():
     def __init__(self):
         self._tipoCafe = []
@@ -103,9 +104,11 @@ class Login():
         cur.close()     
         return passwordx 
 
+
 class AdminUsers():
     def __init__(self):
         pass
+
 
 class Inventario():
     def __init_(self):
@@ -123,8 +126,6 @@ class Inventario():
         miCursor.close()
 
         print(materiaP)
-
-
 
 
 class Productos():
@@ -211,6 +212,38 @@ class Productos():
         conexion.commit()
         curs.close()
 
+class AdminMatP():
+    def __init__(self) -> None:
+        pass
+
+    def valores(self):
+        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
+                                            user = 'root', password ='admin')
+        cursor = conexion.cursor()
+        cursor.execute('SELECT * FROM materiaprima')
+        materiaPrima = cursor.fetchall()
+        cursor.close()
+    
+        return materiaPrima
+    
+    def agregarMatP(self, idMP, nombreMP, categoriaMP):
+        agregar = f"INSERT INTO `cafeteriadb`.`materiaprima` (`idMatPrima`, `nomMatPrima`, `categoria`) VALUES ('{idMP}', '{nombreMP}', '{categoriaMP}');"
+        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
+                                            user = 'root', password ='admin')
+        cursorAdd = conexion.cursor()
+        cursorAdd.execute(agregar)
+        conexion.commit()
+        cursorAdd.close()
+
+    def eliminarMatP(self, idEliminar):
+        eliminaId = f"DELETE FROM materiaprima WHERE idMatPrima = {idEliminar}"
+        conexion =  mysql.connector.connect( host='localhost', database ='CafeteriaDB', 
+                                            user = 'root', password ='admin')
+        curs = conexion.cursor()
+        curs.execute(eliminaId)
+        conexion.commit()
+        curs.close()
+    
 
 producto = Productos()
 inventario = Inventario()

@@ -2,7 +2,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 import back
-from back import Valores
+from back import AdminMatP, Valores
 from back import Ventas as ven
 from back import Login as lg
 import sys
@@ -332,10 +332,7 @@ class Window(QMainWindow):
         self.btnTipoPedido.model().item(0).setEnabled(False)
 
         # Tablas
-        self.tablaAMateriaPrima = QTableWidget(4, 3)
         self.tablaUsuarios = QTableWidget(3, 2)
-
-        self.tablaAMateriaPrima.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tablaUsuarios.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
         # ESTTILOS
@@ -607,8 +604,7 @@ class Window(QMainWindow):
         self.btnAdminMatP.clicked.connect(self.botonAdminMatP)
         self.btnAdminUsuarios.clicked.connect(self.botonAdminUsuarios)
         self.btnAdminProductos.clicked.connect(self.botonAdminProductos)
-        self.btnAgregar.clicked.connect(self.btn_Agregar)
-        self.btnEliminar.clicked.connect(self.btn_Eliminar)
+        self.btnEliminar.clicked.connect(self.btn_AgregarEliminar)
         self.btnAgregarUser.clicked.connect(self.btn_agregarUser)
         self.btnEliminarUser.clicked.connect(self.btn_EliminarUser)
         self.btnIngresar.clicked.connect(self.btn_Ingresar)
@@ -619,6 +615,9 @@ class Window(QMainWindow):
         self.btnIngresarAdminProd.clicked.connect(self.btn_IngresarAdminProd)
         self.btnEjecutarAgregarP.clicked.connect(self.btn_EjecutarAgregarP)
         self.btnEjecutarEliminarP.clicked.connect(self.btn_EjecutarEliminarP)
+        self.btnAutenticarMatP.clicked.connect(self.btn_AutenticarMatP)
+        self.btnAceptar1.clicked.connect(self.btn_Aceptar1)
+        self.btnAceptar2.clicked.connect(self.btn_Aceptar2)
 
         # Pestañas
         self.tab1 = self.ventanaPedidos()
@@ -723,42 +722,18 @@ class Window(QMainWindow):
         self.btnAdminMatP.setStyleSheet('background-color: #6b350a; border: none; color: white;')
         self.btnAdminUsuarios.setStyleSheet('background-color: #6b350a; border: none; color: white;')
         self.btnAdminProductos.setStyleSheet('background-color: #896950; border: none; color: white;')
-    
-    def btn_Agregar(self):
-        self.label2.setText('ID')
-        self.label3.setText('Nombre')
-        self.label4.setText('Categoría')
-
-        self.label2.setFont(self.negrita14)
-        self.label3.setFont(self.negrita14)
-        self.label4.setFont(self.negrita14)
-
-        self.cT1.setEnabled(True)
-        self.cT2.setEnabled(True)
-        self.cT3.setEnabled(True)
-
-        self.cT1.setStyleSheet('border: 1px solid black;\nborder-radius: 5px;')
-        self.cT2.setStyleSheet('border: 1px solid black;\nborder-radius: 5px;')
-        self.cT3.setStyleSheet('border: 1px solid black;\nborder-radius: 5px;')
-
-        self.cT1.setFont(self.negrita14)
-        self.cT2.setFont(self.negrita14)
-        self.cT3.setFont(self.negrita14)
-
-        self.btnAceptar1.setStyleSheet('border: 1px solid brown;\nborder-radius: 5px;\nbackground-color: brown;\ncolor: white;')
-        self.btnAceptar1.setEnabled(True)
         
-    def btn_Eliminar(self):
-        self.label5.setText('ID')
-        self.label5.setFont(self.negrita14)
+    def btn_AgregarEliminar(self):
+        self.campoUsuarioMatP.setEnabled(True)
+        self.campoContraseniaMatP.setEnabled(True)
+        self.btnAutenticarMatP.setEnabled(True)
 
-        self.cT4.setEnabled(True)
-        self.cT4.setStyleSheet('border: 1px solid black; border-radius: 5px;')
-        self.cT4.setFont(self.negrita14)
+        self.campoUsuarioMatP.setStyleSheet(self.comboAdminUsuariosSS)
+        self.campoContraseniaMatP.setStyleSheet(self.comboAdminUsuariosSS)
 
-        self.btnAceptar2.setStyleSheet('border: 1px solid brown;\nborder-radius: 5px;\nbackground-color: brown;\ncolor: white;')
-        self.btnAceptar2.setEnabled(True)
-	
+        self.btnAutenticarMatP.setStyleSheet("""background-color: brown;\ncolor: white;
+                                            border: 1px solid brown;\nborder-radius: 5px""")
+
     def btn_agregarUser(self):
         self.campoNombreAgregar.setEnabled(True)
         self.campoUsuarioAgregar.setEnabled(True)
@@ -896,6 +871,70 @@ class Window(QMainWindow):
         self.tablaAdminProductos.removeRow(self.indices[self.eliminar])
         back.Productos.eliminarP(self, self.eliminar)
 
+    def btn_AutenticarMatP(self):
+        # self.sUser = self.campoUsuarioMatP.text()
+        # self.sContrasenia = self.campoContraseniaMatP.text()
+        # self.correct, self.admin = back.Autenticacion.autenticar(self, self.sUser, self.sContrasenia)
+
+        # if self.correct and self.admin:
+        self.label2.setText('ID')
+        self.label3.setText('Nombre')
+        self.label4.setText('Categoría')
+
+        self.label2.setFont(self.negrita14)
+        self.label3.setFont(self.negrita14)
+        self.label4.setFont(self.negrita14)
+
+        self.cT1.setEnabled(True)
+        self.cT2.setEnabled(True)
+        self.cT3.setEnabled(True)
+
+        self.cT1.setStyleSheet('border: 1px solid black;\nborder-radius: 5px;')
+        self.cT2.setStyleSheet('border: 1px solid black;\nborder-radius: 5px;')
+        self.cT3.setStyleSheet('border: 1px solid black;\nborder-radius: 5px;')
+
+        self.cT1.setFont(self.negrita14)
+        self.cT2.setFont(self.negrita14)
+        self.cT3.setFont(self.negrita14)
+
+        self.btnAceptar1.setStyleSheet('border: 1px solid brown;\nborder-radius: 5px;\nbackground-color: brown;\ncolor: white;')
+        self.btnAceptar1.setEnabled(True)
+
+        self.label5.setText('ID')
+        self.label5.setFont(self.negrita14)
+
+        self.cT4.setEnabled(True)
+        self.cT4.setStyleSheet('border: 1px solid black; border-radius: 5px;')
+        self.cT4.setFont(self.negrita14)
+
+        self.btnAceptar2.setStyleSheet('border: 1px solid brown;\nborder-radius: 5px;\nbackground-color: brown;\ncolor: white;')
+        self.btnAceptar2.setEnabled(True)
+
+    def btn_Aceptar1(self):
+        self.id = self.cT1.text()
+        self.nombre = self.cT2.text()
+        self.categoria = self.cT3.text()
+        self.noFilas = self.tablaAMateriaPrima.rowCount()
+
+        self.tablaAMateriaPrima.insertRow(self.noFilas)
+
+        self.tablaAMateriaPrima.setItem(self.noFilas, 0, QTableWidgetItem(self.id))
+        self.tablaAMateriaPrima.setItem(self.noFilas, 1, QTableWidgetItem(self.nombre))
+        self.tablaAMateriaPrima.setItem(self.noFilas, 2, QTableWidgetItem(self.categoria))
+        
+        back.AdminMatP.agregarMatP(self, self.id, self.nombre, self.categoria)
+
+    def btn_Aceptar2(self):
+        idEliminar = str(self.cT4.text())
+        nFilas = self.tablaAMateriaPrima.rowCount()
+        indices = dict()
+        
+        for i in range(0, nFilas):
+            indices[self.tablaAMateriaPrima.item(i, 0).text()] = i
+        
+        self.tablaAMateriaPrima.removeRow(indices[idEliminar])
+        back.AdminMatP.eliminarMatP(self, idEliminar)
+        
     # Páginas
     def ventanaPedidos(self):
         main_layout = QVBoxLayout()
@@ -981,6 +1020,11 @@ class Window(QMainWindow):
         return main
 
     def ventanaAdminMatP(self):
+        self.valoresTablaMP = back.AdminMatP.valores(self)
+
+        self.tablaAMateriaPrima = QTableWidget(len(self.valoresTablaMP), 3)
+        self.tablaAMateriaPrima.setEditTriggers(QAbstractItemView.NoEditTriggers)
+
         self.cT1.setEnabled(False)
         self.cT2.setEnabled(False)
         self.cT3.setEnabled(False)
@@ -998,9 +1042,13 @@ class Window(QMainWindow):
         self.cT2.setStyleSheet("border: none;\nbackground-color: white;")
         self.cT3.setStyleSheet("border: none;\nbackground-color: white;")
         self.cT4.setStyleSheet("border: none;\nbackground-color: white;")
+        self.campoUsuarioMatP.setStyleSheet("""border: none;\nbackground-color: white;
+                                            color: white;""")
+        self.campoContraseniaMatP.setStyleSheet("""border: none;\nbackground-color: white;
+                                            color: white;""")
 
         self.btnAgregar.setStyleSheet('border: 1px solid green;\nborder-radius: 5px;\nbackground-color: green;\ncolor: white;')
-        self.btnEliminar.setStyleSheet('border: 1px solid red;\nborder-radius: 5px;\nbackground-color: red;\ncolor: white;')
+        self.btnEliminar.setStyleSheet('border: 1px solid brown;\nborder-radius: 5px;\nbackground-color: brown;\ncolor: white;')
         self.btnAceptar1.setStyleSheet('border: 1px solid white;\nborder-radius: 5px;\nbackground-color: white;\ncolor: white;')
         self.btnAceptar2.setStyleSheet('border: 1px solid white;\nborder-radius: 5px;\nbackground-color: white;\ncolor: white;')
         self.btnAutenticarMatP.setStyleSheet('border: 1px solid white;\nborder-radius: 5px;\nbackground-color: white;\ncolor: white;')
@@ -1012,10 +1060,13 @@ class Window(QMainWindow):
         self.btnAutenticarMatP.setFont(self.negrita14)
         
         self.tablaAMateriaPrima.setHorizontalHeaderLabels(['ID', 'Nombre', 'Categoría'])
-        self.tablaAMateriaPrima.resizeRowsToContents()
-        self.tablaAMateriaPrima.resizeColumnsToContents()
         self.tablaAMateriaPrima.setStyleSheet('border: none;')
-        
+
+        for i, val in enumerate(self.valoresTablaMP):
+            self.tablaAMateriaPrima.setItem(i, 0, QTableWidgetItem(str(val[0])))
+            self.tablaAMateriaPrima.setItem(i, 1, QTableWidgetItem(str(val[1])))
+            self.tablaAMateriaPrima.setItem(i, 2, QTableWidgetItem(str(val[2])))
+
         vbox = QVBoxLayout()
         vbox1 = QVBoxLayout()
         vbox2 = QVBoxLayout()
@@ -1040,12 +1091,10 @@ class Window(QMainWindow):
         hbox1.addWidget(self.cT2)
         hbox1.addWidget(self.cT3)
 
-        vbox.addWidget(self.btnAgregar)
         vbox.addLayout(hbox)
         vbox.addLayout(hbox1)
         vbox.addWidget(self.btnAceptar1)
 
-        vbox1.addWidget(self.btnEliminar)
         vbox1.addWidget(self.label5)
         vbox1.addWidget(self.cT4)
         vbox1.addWidget(self.btnAceptar2)
@@ -1055,6 +1104,7 @@ class Window(QMainWindow):
 
         main_layout.addWidget(self.materiaPrimaLabel)
         main_layout.addLayout(hbox3)
+        main_layout.addWidget(self.btnEliminar)
         main_layout.addLayout(hbox2)
         
         main = QWidget()
